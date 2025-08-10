@@ -2,30 +2,25 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const connectToMongo = require('./db');
-const app = express();
-const port = 5000;
 
-// Fix Mongoose deprecation warning
 mongoose.set('strictQuery', false);
 
-// Connect to MongoDB first
-connectToMongo().then(() => {
-  // Middleware
-  app.use(cors());
-  app.use(express.json());
+const app = express();
 
-  // Routes
-  const authRoutes = require('./routes/auth');
-  const notesRouter = require('./routes/notes');
-  
-  app.use('/api/auth', authRoutes);
-  app.use('/api/notes', notesRouter);
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-  // Start server
-  app.listen(port, () => {
-    console.log(`Notebook backend Server running on port ${port}`);
-  });
-}).catch(err => {
-  console.error('Failed to connect to MongoDB', err);
-  process.exit(1);
-});
+// Routes
+const authRoutes = require('./routes/auth');
+const notesRouter = require('./routes/notes');
+app.use('/api/auth', authRoutes);
+app.use('/api/notes', notesRouter);
+
+// Connect to MongoDB (only once)
+connectToMongo()
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error("MongoDB connection error:", err));
+
+// Export app for Vercel serverless functions
+module.exports = app;
