@@ -14,6 +14,10 @@ const notesRouter = require('./routes/notes');
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRouter);
 
+app.get("/", (req, res) => {
+  res.send("API Working");
+});
+
 // Connect to MongoDB once
 connectToMongo()
   .then(() => console.log("MongoDB connected"))
